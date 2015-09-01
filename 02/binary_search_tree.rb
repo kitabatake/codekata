@@ -1,121 +1,103 @@
-
 class BinarySearchTree
 
-  attr_reader :array
-
-  def initialize
-    @array = []
-  end
-
-  def position (index)
-
-    depth = 0
-
-    loop do 
-      break if (index - 2 ** depth) < 0
-      index -= 2 ** depth
-      depth += 1
-    end
-
-    return [depth, index]
-  end
-
-  def left_child_index (index)
-    depth, landscape_index = position index
-    depth_head_index = depth_head_index(depth + 1)
-    return depth_head_index + landscape_index * 2
-  end
-
-  def right_child_index (index)
-    left_child_index(index) + 1
-  end
-
-  def depth_head_index (depth)
-    index = 0
-    depth.times do |d|
-      index += 2 ** d
-    end
-    return index
-  end
-
-  def add (num)
-
-    index = 0
-    loop do
-
-      unless @array[index] then
-        @array[index] = num
-        break
-      end
-
-      if num < @array[index]
-        index = left_child_index index
-      elsif num > @array[index]
-        index = right_child_index index
-      elsif num == @array[index]
-        break
-      end
+  class Node
+    attr_accessor :parent, :left_child, :right_child, :value
+    
+    def initialize (value, parent)
+      @value = value
+      @parent = parent
     end
   end
 
-  def delete (num)
+  def initialize (array = [])
+    @root_node = nil
+    add_values array
+  end
 
-    index = search num
+  def add_values (values)
+    values.each do |value|
+      add_value value
+    end
+  end
 
-    return if index.nil?
+  def add_value (value)
 
-    left_child_index = left_child_index index
-    right_child_index = right_child_index index
-
-    if @array[left_child_index].nil? && @array[right_child_index].nil?
-      @array[index] = nil
+    if @root_node.nil?
+      @root_node = Node.new(value, nil)
       return
     end
 
-    if @array[left_child_index]
+    current_node = @root_node
 
-      pop_index = left_child_index
+    loop do
+      
+      if value < current_node.value
 
-      loop do
-        tmp_index = right_child_index pop_index
-        break if @array[tmp_index].nil?
-        pop_index = tmp_index
-      end
-    else
-       pop_index = right_child_index
+        if current_node.left_child.nil?
+          current_node.left_child = Node.new value, current_node
+          break
+        else
+          current_node = current_node.left_child
+        end
 
-      loop do
-        tmp_index = left_child_index pop_index
-        break if @array[tmp_index].nil?
-        pop_index = tmp_index
+      else
+        if current_node.right_child.nil?
+          current_node.right_child = Node.new value, current_node
+          break
+        else
+          current_node = current_node.right_child
+        end
       end
     end
 
-    @array[index] = @array[pop_index]
-    @array[pop_index] = nil      
-
   end
 
-  def search (num)
+  # get value depth
+  # @param [Integer] value search value
+  # @return [Integer] depth or -1 (not contained)
+  def depth (value)
 
-    index = 0
+    depth = 0
+    current_node = @root_node
+
     loop do
 
-      if @array[index].nil?
-        index = nil
+      if current_node.nil?
+        depth = -1
         break
-      elsif @array[index] == num
-        break
-      elsif num < @array[index]
-        index = left_child_index index
-      elsif num > @array[index]
-        index = right_child_index index
       end
+
+      if value == current_node.value
+        break
+      elsif value < current_node.value
+        current_node = current_node.left_child
+      else
+        current_node = current_node.right_child
+      end
+
+      depth += 1
+
     end
 
-    return index
+    return depth
+
   end
 
+  # get sorted array
+  # @return [Array] sorted array
+  def sorted_array
+    array = []
+    sort_node @root_node, array
+    return array
+  end
+
+  private
+
+    def sort_node (node, array)
+      sort_node node.left_child, array if node.left_child
+      array.push node.value
+      sort_node node.right_child, array if node.right_child
+    end
 end
 
 
