@@ -1,26 +1,7 @@
+def factorial (num)
 
-def rec (array)
-
-  all = []
-
-  if array.size <= 1
-    return [array]
-  end
-
-  array.each_with_index do |ele, i|
-
-    a = array.dup
-    a.delete_at i
-
-    hoge = rec(a)
-    hoge.each do |huga|
-      all.push([ele] + huga )
-    end
-  end
-
-  return all
-
+  return 1 if num == 1
+  return num * factorial(num - 1)
 end
 
-array = [1,2,3]
-p array.permutation(3).to_a
+p factorial 5
