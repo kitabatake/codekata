@@ -18,8 +18,10 @@ class Anagram
   # @return [Array] anagrams
   def search_for (word)
 
-    all_words = []
-    generate_words all_words, "", word.split("")
+    chars = word.split("")
+    all_words = chars.permutation(chars.size).map{|_chars|
+      _chars.join ""
+    }
 
     anagrams = []
     all_words.each do |w|
@@ -27,24 +29,6 @@ class Anagram
     end
 
     return anagrams
-  end
-
-  # generate all pattern words recursive
-  # @param [Array] words container of all pattern words.
-  # @oaram [String] word
-  # @param [Array] chars it can add to word characters.
-  def generate_words (words, word, chars)
-
-    if chars.empty?
-      words.push word
-    end
-
-    chars.each_with_index do |char, i|
-      tmp_chars = chars.clone
-      tmp_chars.delete_at i
-      generate_words words, word + chars[i], tmp_chars
-    end
-
   end
 
 end
